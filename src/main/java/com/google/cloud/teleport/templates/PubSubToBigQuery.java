@@ -158,7 +158,7 @@ public class PubSubToBigQuery {
    * The {@link Options} class provides the custom execution options passed by the executor at the
    * command-line.
    */
-  public interface Options extends PipelineOptions, JavascriptTextTransformerOptions {
+  public interface Options extends org.apache.beam.runners.dataflow.options.DataflowPipelineOptions, JavascriptTextTransformerOptions {
     @Description("Table spec to write the output to")
     ValueProvider<String> getOutputTableSpec();
 
@@ -202,7 +202,12 @@ public class PubSubToBigQuery {
    */
   public static void main(String[] args) {
     Options options = PipelineOptionsFactory.fromArgs(args).withValidation().as(Options.class);
-
+    java.util.List<String> experiments = options.getExperiments();
+    if (experiments == null) {
+      experiments = new java.util.ArrayList<>();
+    }
+    experiments.add("use_runner_v2");
+    options.setExperiments(experiments);
     run(options);
   }
 
